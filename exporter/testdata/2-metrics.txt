@@ -1,0 +1,9 @@
+# HELP clamav_db_timestamp_seconds Unix timestamp of the ClamAV Virus Database build time.
+# TYPE clamav_db_timestamp_seconds gauge
+clamav_db_timestamp_seconds 1.637313586e+09
+# HELP clamav_db_version Currently installed ClamAV Virus Database version.
+# TYPE clamav_db_version gauge
+clamav_db_version 26358
+# HELP clamav_up Was the last scrape successful.
+# TYPE clamav_up gauge
+clamav_up 1

@@ -1,0 +1,14 @@
+PONG
+--
+VERSION
+--
+POOLS: 1
+
+STATE: VALID PRIMARY
+THREADS: live 1  idle 0 max 12 idle-timeout 30
+QUEUE: 0 items
+	STATS 0.000758
+Error processing command. ERROR
+
+MEMSTATS: heap 11.188M mmap 0.129M used 2.312M free 8.876M releasable 0.021M pools 1 pools_used 625.507M pools_total 625.570M
+END

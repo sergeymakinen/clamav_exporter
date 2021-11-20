@@ -1,0 +1,7 @@
+version: '2'
+services:
+  clamav:
+    build:
+      context: ./clamav
+    ports:
+      - '3310:3310'

@@ -1,0 +1,36 @@
+# HELP clamav_db_timestamp_seconds Unix timestamp of the ClamAV Virus Database build time.
+# TYPE clamav_db_timestamp_seconds gauge
+clamav_db_timestamp_seconds 1.637313586e+09
+# HELP clamav_db_version Currently installed ClamAV Virus Database version.
+# TYPE clamav_db_version gauge
+clamav_db_version 123
+# HELP clamav_memory_heap_bytes Number of bytes allocated on the heap.
+# TYPE clamav_memory_heap_bytes gauge
+clamav_memory_heap_bytes 128
+# HELP clamav_memory_mmap_bytes Number of bytes currently allocated using mmap.
+# TYPE clamav_memory_mmap_bytes gauge
+clamav_memory_mmap_bytes 0
+# HELP clamav_memory_pools_total_bytes Number of bytes available to all pools.
+# TYPE clamav_memory_pools_total_bytes gauge
+clamav_memory_pools_total_bytes 1.3631488e+08
+# HELP clamav_memory_pools_used_bytes Number of bytes currently used by all pools.
+# TYPE clamav_memory_pools_used_bytes gauge
+clamav_memory_pools_used_bytes 132096
+# HELP clamav_pool_idle_timeout_threads Number of idle timeout threads in the pool.
+# TYPE clamav_pool_idle_timeout_threads gauge
+clamav_pool_idle_timeout_threads{index="0",primary="1"} 126
+# HELP clamav_pool_live_threads Number of live threads in the pool.
+# TYPE clamav_pool_live_threads gauge
+clamav_pool_live_threads{index="0",primary="1"} 124
+# HELP clamav_pool_max_threads Maximum number of threads in the pool.
+# TYPE clamav_pool_max_threads gauge
+clamav_pool_max_threads{index="0",primary="1"} 125
+# HELP clamav_pool_state State of the thread pool.
+# TYPE clamav_pool_state gauge
+clamav_pool_state{index="0",primary="1"} 2
+# HELP clamav_pool_queue_length Number of items in the pool queue.
+# TYPE clamav_pool_queue_length gauge
+clamav_pool_queue_length{index="0",primary="1"} 127
+# HELP clamav_up Was the last scrape successful.
+# TYPE clamav_up gauge
+clamav_up 1

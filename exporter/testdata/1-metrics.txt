@@ -1,0 +1,3 @@
+# HELP clamav_up Was the last scrape successful.
+# TYPE clamav_up gauge
+clamav_up 1

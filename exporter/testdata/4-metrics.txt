@@ -1,0 +1,9 @@
+# HELP clamav_memory_free_bytes Number of bytes in free blocks.
+# TYPE clamav_memory_free_bytes gauge
+clamav_memory_free_bytes 9.30716e+06
+# HELP clamav_memory_pools_total_bytes Number of bytes available to all pools.
+# TYPE clamav_memory_pools_total_bytes gauge
+clamav_memory_pools_total_bytes 6.55957688e+08
+# HELP clamav_up Was the last scrape successful.
+# TYPE clamav_up gauge
+clamav_up 1

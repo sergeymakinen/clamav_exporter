@@ -1,0 +1,10 @@
+PONG
+--
+VERSION
+--
+POOLS: 1
+
+STATE: PRIMARY
+THREADS: idle-timeout 30
+MEMSTATS: free 8.876M pools_total 625.570M
+END
