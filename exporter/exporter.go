@@ -25,7 +25,7 @@ var (
 	reVersion    = regexp.MustCompile(`ClamAV .+/(\d+)/(.+)`)
 	rePool       = regexp.MustCompile(`STATE: ([^\n]+)\nTHREADS: ([^\n]+)\nQUEUE: ([^\n]+)\n`)
 	reThreadStat = regexp.MustCompile(`([a-z\-]+) (\d+)`)
-	reQueue      = regexp.MustCompile(`(\d+) items`)
+	reQueue      = regexp.MustCompile(`(\d+) items min_wait: (\d+\.\d+) max_wait: (\d+\.\d+) avg_wait: (\d+\.\d+)`)
 	reMemStats   = regexp.MustCompile(`MEMSTATS: (.+)`)
 	reMemStat    = regexp.MustCompile(`([a-z_]+) ([\d.]+)M`)
 )
@@ -57,6 +57,9 @@ type Exporter struct {
 	poolMaxThreads         *prometheus.Desc
 	poolIdleTimeoutThreads *prometheus.Desc
 	poolQueueLength        *prometheus.Desc
+	poolQueueMinWait       *prometheus.Desc
+	poolQueueMaxWait       *prometheus.Desc
+	poolQueueAvgWait       *prometheus.Desc
 	heapMemory             *prometheus.Desc
 	mmapMemory             *prometheus.Desc
 	usedMemory             *prometheus.Desc
@@ -78,6 +81,9 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.poolMaxThreads
 	ch <- e.poolIdleTimeoutThreads
 	ch <- e.poolQueueLength
+	ch <- e.poolQueueMinWait
+	ch <- e.poolQueueMaxWait
+	ch <- e.poolQueueAvgWait
 	ch <- e.heapMemory
 	ch <- e.mmapMemory
 	ch <- e.usedMemory
@@ -214,7 +220,10 @@ func (e *Exporter) scrapeClamd(resp [][]byte) (m metrics, ok bool) {
 		}
 		matches = reQueue.FindStringSubmatch(poolMatches[3])
 		if matches != nil {
-			pool.QueueLength, _ = strconv.ParseInt(matches[1], 10, 64)
+			pool.Queue.Length, _ = strconv.ParseInt(matches[1], 10, 64)
+			pool.Queue.MinWait, _ = strconv.ParseFloat(matches[2], 64)
+			pool.Queue.MaxWait, _ = strconv.ParseFloat(matches[3], 64)
+			pool.Queue.AvgWait, _ = strconv.ParseFloat(matches[4], 64)
 		}
 		m.Pools = append(m.Pools, pool)
 	}
@@ -280,7 +289,10 @@ func (e *Exporter) collect(m metrics, ch chan<- prometheus.Metric) {
 		if pool.Threads.IdleTimeout != nil {
 			ch <- prometheus.MustNewConstMetric(e.poolIdleTimeoutThreads, prometheus.GaugeValue, float64(*pool.Threads.IdleTimeout), labelValues...)
 		}
-		ch <- prometheus.MustNewConstMetric(e.poolQueueLength, prometheus.GaugeValue, float64(pool.QueueLength), labelValues...)
+		ch <- prometheus.MustNewConstMetric(e.poolQueueLength, prometheus.GaugeValue, float64(pool.Queue.Length), labelValues...)
+		ch <- prometheus.MustNewConstMetric(e.poolQueueMinWait, prometheus.GaugeValue, pool.Queue.MinWait, labelValues...)
+		ch <- prometheus.MustNewConstMetric(e.poolQueueMaxWait, prometheus.GaugeValue, pool.Queue.MaxWait, labelValues...)
+		ch <- prometheus.MustNewConstMetric(e.poolQueueAvgWait, prometheus.GaugeValue, pool.Queue.AvgWait, labelValues...)
 	}
 	if m.Memory.Heap != nil {
 		ch <- prometheus.MustNewConstMetric(e.heapMemory, prometheus.GaugeValue, float64(*m.Memory.Heap))
@@ -395,6 +407,24 @@ func New(address *url.URL, timeout time.Duration, retries int, logger log.Logger
 		poolQueueLength: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "pool_queue_length"),
 			"Number of items in the pool queue.",
+			[]string{"index", "primary"},
+			nil,
+		),
+		poolQueueMinWait: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "pool_queue_min_wait_sec"),
+			"Minimum wait time in the pool queue.",
+			[]string{"index", "primary"},
+			nil,
+		),
+		poolQueueMaxWait: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "pool_queue_max_wait_sec"),
+			"Maximum wait time in the pool queue.",
+			[]string{"index", "primary"},
+			nil,
+		),
+		poolQueueAvgWait: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "pool_queue_avg_wait_sec"),
+			"Average wait time in the pool queue.",
 			[]string{"index", "primary"},
 			nil,
 		),

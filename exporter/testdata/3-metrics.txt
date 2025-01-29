@@ -34,9 +34,18 @@ clamav_pool_max_threads{index="0",primary="1"} 12
 # HELP clamav_pool_state State of the thread pool.
 # TYPE clamav_pool_state gauge
 clamav_pool_state{index="0",primary="1"} 1
+# HELP clamav_pool_queue_avg_wait_sec Average wait time in the pool queue.
+# TYPE clamav_pool_queue_avg_wait_sec gauge
+clamav_pool_queue_avg_wait_sec{index="0",primary="1"} 0
 # HELP clamav_pool_queue_length Number of items in the pool queue.
 # TYPE clamav_pool_queue_length gauge
 clamav_pool_queue_length{index="0",primary="1"} 0
+# HELP clamav_pool_queue_max_wait_sec Maximum wait time in the pool queue.
+# TYPE clamav_pool_queue_max_wait_sec gauge
+clamav_pool_queue_max_wait_sec{index="0",primary="1"} 0
+# HELP clamav_pool_queue_min_wait_sec Minimum wait time in the pool queue.
+# TYPE clamav_pool_queue_min_wait_sec gauge
+clamav_pool_queue_min_wait_sec{index="0",primary="1"} 0
 # HELP clamav_up Was the last scrape successful.
 # TYPE clamav_up gauge
 clamav_up 1
