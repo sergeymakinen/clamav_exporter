@@ -27,6 +27,9 @@ make
 | clamav_pool_max_threads | Maximum number of threads in the pool. | index, primary
 | clamav_pool_idle_timeout_threads | Number of idle timeout threads in the pool. | index, primary
 | clamav_pool_queue_length | Number of items in the pool queue. | index, primary
+| clamav_pool_queue_min_wait_sec | Minimum time a currently queued item has been waiting. | index, primary
+| clamav_pool_queue_max_wait_sec | Maximum time a currently queued item has been waiting. | index, primary
+| clamav_pool_queue_avg_wait_sec | Average time that currently queued items have been waiting. | index, primary
 | clamav_memory_heap_bytes | Number of bytes allocated on the heap. |
 | clamav_memory_mmap_bytes | Number of bytes currently allocated using mmap. |
 | clamav_memory_used_bytes | Number of bytes used by in-use allocations. |

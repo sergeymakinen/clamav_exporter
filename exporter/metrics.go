@@ -12,10 +12,17 @@ type db struct {
 }
 
 type pool struct {
-	State       string
-	Primary     bool
-	Threads     threads
-	QueueLength int64
+	State   string
+	Primary bool
+	Threads threads
+	Queue   queue
+}
+
+type queue struct {
+	Length  int64
+	MinWait float64
+	MaxWait float64
+	AvgWait float64
 }
 
 type threads struct {

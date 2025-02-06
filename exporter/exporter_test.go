@@ -36,7 +36,12 @@ func TestExporter_Collect(t *testing.T) {
 						Max:         newInt64(125),
 						IdleTimeout: newInt64(126),
 					},
-					QueueLength: 127,
+					Queue: queue{
+						Length:  127,
+						MinWait: 0.131,
+						MaxWait: 0.132,
+						AvgWait: 0.133,
+					},
 				},
 			},
 			Memory: memory{
