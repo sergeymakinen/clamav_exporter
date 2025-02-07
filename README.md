@@ -4,6 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergeymakinen/clamav_exporter.svg)](https://pkg.go.dev/github.com/sergeymakinen/clamav_exporter/v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sergeymakinen/clamav_exporter/v2)](https://goreportcard.com/report/github.com/sergeymakinen/clamav_exporter/v2)
 [![codecov](https://codecov.io/gh/sergeymakinen/clamav_exporter/branch/main/graph/badge.svg)](https://codecov.io/gh/sergeymakinen/clamav_exporter)
+[![Docker Pulls](https://img.shields.io/docker/pulls/sergeymakinen/clamav_exporter)](https://hub.docker.com/r/sergeymakinen/clamav_exporter)
 
 Export ClamAV daemon stats via a TCP socket to Prometheus.
 
@@ -12,6 +13,19 @@ To run it:
 ```bash
 make
 ./clamav_exporter [flags]
+```
+
+## Using Docker
+
+You can deploy this exporter using the [sergeymakinen/clamav_exporter](https://hub.docker.com/r/sergeymakinen/clamav_exporter) Docker image.
+
+For example:
+
+```bash
+docker pull sergeymakinen/clamav_exporter
+
+docker run -d -p 9906:9906 sergeymakinen/clamav_exporter \
+  --clamav.address tcp://clamav:3310
 ```
 
 ## Exported metrics
