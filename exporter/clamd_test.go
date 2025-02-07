@@ -2,7 +2,6 @@ package exporter
 
 import (
 	"bytes"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"os/exec"
@@ -12,24 +11,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/prometheus/common/expfmt"
+	"github.com/prometheus/common/promslog"
 )
 
 func TestExporter_scrapeClamd(t *testing.T) {
 	files, err := filepath.Glob("testdata/*-socket.txt")
 	if err != nil {
-		panic("failed to list test files: " + err.Error())
+		t.Fatal(err)
 	}
 	for _, file := range files {
 		t.Run(file, func(t *testing.T) {
-			in, err := ioutil.ReadFile(file)
+			in, err := os.ReadFile(file)
 			if err != nil {
-				panic("failed to read " + file + ": " + err.Error())
+				t.Fatal(err)
 			}
-			exporter, err := New(nil, 0, 0, log.NewNopLogger())
+			exporter, err := New(nil, 0, 0, promslog.NewNopLogger())
 			if err != nil {
 				t.Fatalf("New() = _, %v; want nil", err)
 			}
@@ -38,16 +37,16 @@ func TestExporter_scrapeClamd(t *testing.T) {
 			}
 			outFile := strings.Replace(file, "-socket.txt", "-metrics.txt", 1)
 			if _, err := os.Stat(outFile); err == nil {
-				out, err := ioutil.ReadFile(outFile)
+				out, err := os.ReadFile(outFile)
 				if err != nil {
-					panic("failed to read " + outFile + ": " + err.Error())
+					t.Fatal(err)
 				}
 				if err = testutil.CollectAndCompare(exporter, bytes.NewReader(out)); err != nil {
 					t.Errorf("testutil.CollectAndCompare() = %v; want nil", err)
 				}
 			} else {
-				if err = ioutil.WriteFile(outFile, collect(t, exporter), 0666); err != nil {
-					panic("failed to write " + outFile + ": " + err.Error())
+				if err = os.WriteFile(outFile, collect(t, exporter), 0666); err != nil {
+					t.Fatal(err)
 				}
 				t.Logf("wrote %s golden master", outFile)
 			}
@@ -77,9 +76,9 @@ func TestExporter_Collect_Clamd(t *testing.T) {
 		t.Fatal(err)
 	}
 	address, _ := url.Parse("tcp://127.0.0.1:3310")
-	b, err := ioutil.ReadFile("testdata/metrics-integration.txt")
+	b, err := os.ReadFile("testdata/metrics-integration.txt")
 	if err != nil {
-		panic("failed to read testdata/metrics-integration.txt: " + err.Error())
+		t.Fatal(err)
 	}
 	b = bytes.ReplaceAll(b, []byte("__CLAMAV_DB_VERSION__"), []byte(strconv.Itoa(ver)))
 	b = bytes.ReplaceAll(b, []byte("__CLAMAV_DB_TIMESTAMP_SECONDS__"), []byte(strconv.FormatInt(tm.Unix(), 10)))
@@ -92,7 +91,7 @@ func TestExporter_Collect_Clamd(t *testing.T) {
 		"clamav_pool_queue_length",
 		"clamav_up",
 	}
-	exporter, err := New(address, time.Second, 2, log.NewNopLogger())
+	exporter, err := New(address, time.Second, 2, promslog.NewNopLogger())
 	if err != nil {
 		t.Fatalf("New() = _, %v; want nil", err)
 	}
@@ -104,17 +103,22 @@ func TestExporter_Collect_Clamd(t *testing.T) {
 func collect(t *testing.T, c prometheus.Collector) []byte {
 	reg := prometheus.NewPedanticRegistry()
 	if err := reg.Register(c); err != nil {
-		t.Fatalf("failed to register exporter: %v", err)
+		t.Fatal(err)
 	}
 	got, err := reg.Gather()
 	if err != nil {
-		t.Fatalf("failed to gather metrics: %v", err)
+		t.Fatal(err)
 	}
 	var buf bytes.Buffer
 	enc := expfmt.NewEncoder(&buf, expfmt.FmtText)
 	for _, mf := range got {
 		if err := enc.Encode(mf); err != nil {
-			t.Fatalf("failed to encode metric: %v", err)
+			t.Fatal(err)
+		}
+	}
+	if closer, ok := enc.(expfmt.Closer); ok {
+		if err := closer.Close(); err != nil {
+			t.Fatal(err)
 		}
 	}
 	return buf.Bytes()

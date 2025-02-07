@@ -1,8 +1,8 @@
 # ClamAV Exporter
 
 [![tests](https://github.com/sergeymakinen/clamav_exporter/workflows/tests/badge.svg)](https://github.com/sergeymakinen/clamav_exporter/actions?query=workflow%3Atests)
-[![Go Reference](https://pkg.go.dev/badge/github.com/sergeymakinen/clamav_exporter.svg)](https://pkg.go.dev/github.com/sergeymakinen/clamav_exporter)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sergeymakinen/clamav_exporter)](https://goreportcard.com/report/github.com/sergeymakinen/clamav_exporter)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sergeymakinen/clamav_exporter.svg)](https://pkg.go.dev/github.com/sergeymakinen/clamav_exporter/v2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sergeymakinen/clamav_exporter/v2)](https://goreportcard.com/report/github.com/sergeymakinen/clamav_exporter/v2)
 [![codecov](https://codecov.io/gh/sergeymakinen/clamav_exporter/branch/main/graph/badge.svg)](https://codecov.io/gh/sergeymakinen/clamav_exporter)
 
 Export ClamAV daemon stats via a TCP socket to Prometheus.
