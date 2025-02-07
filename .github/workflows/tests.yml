@@ -27,15 +27,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Start containers
         run: |
-          mkdir -p testdata/docker/clamav/rootfs/var/lib/clamav
-          curl -L https://github.com/sergeymakinen/clamav_exporter/raw/fixtures/bytecode.cvd > testdata/docker/clamav/rootfs/var/lib/clamav/bytecode.cvd
-          curl -L https://github.com/sergeymakinen/clamav_exporter/raw/fixtures/daily.cvd > testdata/docker/clamav/rootfs/var/lib/clamav/daily.cvd
-          curl -L https://github.com/sergeymakinen/clamav_exporter/raw/fixtures/freshclam.dat > testdata/docker/clamav/rootfs/var/lib/clamav/freshclam.dat
           for i in {1..10}; do
             echo $i:
-            docker-compose -f testdata/docker/docker-compose.yml top | grep 'clamd' && sleep 10 && break || (docker-compose -f testdata/docker/docker-compose.yml up -d --force-recreate && sleep 30)
+            docker compose -f testdata/docker/compose.yml top | grep 'clamd' && sleep 10 && break || (docker compose -f testdata/docker/compose.yml up -d --force-recreate && sleep 30)
           done
-          docker-compose -f testdata/docker/docker-compose.yml top
+          docker compose -f testdata/docker/compose.yml top
       - name: Test
         run: go test -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Upload coverage to Codecov
