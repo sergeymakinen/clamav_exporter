@@ -2,13 +2,12 @@ package exporter
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus/testutil"
+	"github.com/prometheus/common/promslog"
 )
 
 func TestMain(m *testing.M) {
@@ -17,7 +16,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestExporter_Collect(t *testing.T) {
-	exporter, err := New(nil, 0, 0, log.NewNopLogger())
+	exporter, err := New(nil, 0, 0, promslog.NewNopLogger())
 	if err != nil {
 		t.Fatalf("New() = _, %v; want nil", err)
 	}
@@ -52,9 +51,9 @@ func TestExporter_Collect(t *testing.T) {
 			},
 		}, true
 	}
-	b, err := ioutil.ReadFile("testdata/metrics.txt")
+	b, err := os.ReadFile("testdata/metrics.txt")
 	if err != nil {
-		panic("failed to read testdata/metrics.txt: " + err.Error())
+		t.Fatal(err)
 	}
 	if err := testutil.CollectAndCompare(exporter, bytes.NewReader(b)); err != nil {
 		t.Errorf("testutil.CollectAndCompare() = %v; want nil", err)

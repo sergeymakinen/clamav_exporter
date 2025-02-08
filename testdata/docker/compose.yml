@@ -1,0 +1,6 @@
+services:
+  clamav:
+    platform: linux/amd64
+    image: clamav/clamav:stable
+    ports:
+      - '3310:3310'

@@ -5,7 +5,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"log/slog"
 	"net"
 	"net/url"
 	"regexp"
@@ -14,8 +15,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -45,7 +44,7 @@ type Exporter struct {
 	address *url.URL
 	timeout time.Duration
 	retries int
-	logger  log.Logger
+	logger  *slog.Logger
 	mu      sync.Mutex
 
 	up                     *prometheus.Desc
@@ -116,7 +115,7 @@ func (e *Exporter) scrapeSocket() (m metrics, ok bool) {
 		}
 		conn, err := net.DialTimeout(network, addr, e.timeout)
 		if err != nil {
-			level.Error(e.logger).Log("msg", "Failed to connect to clamd", "err", err, "retries", retries)
+			e.logger.Error("Failed to connect to clamd", "err", err, "retries", retries)
 			return false
 		}
 		defer conn.Close()
@@ -131,7 +130,7 @@ func (e *Exporter) scrapeSocket() (m metrics, ok bool) {
 			defer mu.Unlock()
 			conn.SetWriteDeadline(time.Now().Add(e.timeout))
 			if _, err := conn.Write([]byte("z" + cmd + "\000")); err != nil {
-				level.Error(e.logger).Log("msg", "Failed to send command", "cmd", cmd, "err", err, "retries", retries)
+				e.logger.Error("Failed to send command", "cmd", cmd, "err", err, "retries", retries)
 				return false
 			}
 			return true
@@ -144,19 +143,19 @@ func (e *Exporter) scrapeSocket() (m metrics, ok bool) {
 			for {
 				conn.SetReadDeadline(time.Now().Add(e.timeout))
 				if _, err = conn.Read(nil); err != nil {
-					level.Error(e.logger).Log("msg", "Failed to read response", "err", err, "retries", retries)
+					e.logger.Error("Failed to read response", "err", err, "retries", retries)
 					break
 				}
 				mu.Lock()
 				var b []byte
-				b, err = ioutil.ReadAll(conn)
+				b, err = io.ReadAll(conn)
 				mu.Unlock()
 				if err != nil {
-					level.Error(e.logger).Log("msg", "Failed to read response", "err", err, "retries", retries)
+					e.logger.Error("Failed to read response", "err", err, "retries", retries)
 					break
 				}
 				if err = parseResponse(b, resp); err != nil {
-					level.Error(e.logger).Log("msg", "Failed to parse response", "err", err, "retries", retries)
+					e.logger.Error("Failed to parse response", "err", err, "retries", retries)
 					break
 				}
 				if len(b) == 0 {
@@ -185,7 +184,7 @@ func (e *Exporter) scrapeSocket() (m metrics, ok bool) {
 
 func (e *Exporter) scrapeClamd(resp [][]byte) (m metrics, ok bool) {
 	if !bytes.Equal(resp[0], []byte("PONG")) {
-		level.Error(e.logger).Log("msg", "Unexpected PING response", "resp", resp[0])
+		e.logger.Error("Unexpected PING response", "resp", resp[0])
 		return
 	}
 	matches := reVersion.FindStringSubmatch(string(resp[1]))
@@ -260,7 +259,7 @@ func (e *Exporter) collect(m metrics, ch chan<- prometheus.Metric) {
 		t, err := time.ParseInLocation("Mon Jan _2 15:04:05 2006", m.DB.Time, tz)
 		if err != nil {
 			ch <- prometheus.MustNewConstMetric(e.up, prometheus.GaugeValue, 1)
-			level.Error(e.logger).Log("msg", "Failed to parse database time", "time", m.DB.Time, "err", err)
+			e.logger.Error("Failed to parse database time", "time", m.DB.Time, "err", err)
 			return
 		}
 		ch <- prometheus.MustNewConstMetric(e.dbTime, prometheus.GaugeValue, float64(t.Unix()))
@@ -345,7 +344,7 @@ func parseResponse(data []byte, resp [][]byte) error {
 }
 
 // New returns an initialized exporter.
-func New(address *url.URL, timeout time.Duration, retries int, logger log.Logger) (*Exporter, error) {
+func New(address *url.URL, timeout time.Duration, retries int, logger *slog.Logger) (*Exporter, error) {
 	if retries < 0 {
 		return nil, fmt.Errorf("invalid retry count %d", retries)
 	}
