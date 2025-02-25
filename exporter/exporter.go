@@ -21,7 +21,7 @@ import (
 const namespace = "clamav"
 
 var (
-	reVersion    = regexp.MustCompile(`ClamAV .+/(\d+)/(.+)`)
+	reVersion    = regexp.MustCompile(`ClamAV (.+)/(\d+)/(.+)`)
 	rePool       = regexp.MustCompile(`STATE: ([^\n]+)\nTHREADS: ([^\n]+)\nQUEUE: ([^\n]+)\n`)
 	reThreadStat = regexp.MustCompile(`([a-z\-]+) (\d+)`)
 	reQueue      = regexp.MustCompile(`(\d+) items min_wait: (\d+\.\d+) max_wait: (\d+\.\d+) avg_wait: (\d+\.\d+)`)
@@ -48,6 +48,7 @@ type Exporter struct {
 	mu      sync.Mutex
 
 	up                     *prometheus.Desc
+	version                *prometheus.Desc
 	dbVersion              *prometheus.Desc
 	dbTime                 *prometheus.Desc
 	poolState              *prometheus.Desc
@@ -72,6 +73,7 @@ type Exporter struct {
 // implements prometheus.Collector.
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.up
+	ch <- e.version
 	ch <- e.dbVersion
 	ch <- e.dbTime
 	ch <- e.poolState
@@ -189,10 +191,11 @@ func (e *Exporter) scrapeClamd(resp [][]byte) (m metrics, ok bool) {
 	}
 	matches := reVersion.FindStringSubmatch(string(resp[1]))
 	if matches != nil {
-		n, _ := strconv.ParseUint(matches[1], 10, 32)
+		m.Version = &matches[1]
+		n, _ := strconv.ParseUint(matches[2], 10, 32)
 		m.DB = &db{
 			Version: uint32(n),
-			Time:    matches[2],
+			Time:    matches[3],
 		}
 	}
 	for _, poolMatches := range rePool.FindAllStringSubmatch(string(resp[2]), -1) {
@@ -254,6 +257,9 @@ func (e *Exporter) scrapeClamd(resp [][]byte) (m metrics, ok bool) {
 }
 
 func (e *Exporter) collect(m metrics, ch chan<- prometheus.Metric) {
+	if m.Version != nil {
+		ch <- prometheus.MustNewConstMetric(e.version, prometheus.GaugeValue, float64(1), *m.Version)
+	}
 	if m.DB != nil {
 		ch <- prometheus.MustNewConstMetric(e.dbVersion, prometheus.GaugeValue, float64(m.DB.Version))
 		t, err := time.ParseInLocation("Mon Jan _2 15:04:05 2006", m.DB.Time, tz)
@@ -359,6 +365,12 @@ func New(address *url.URL, timeout time.Duration, retries int, logger *slog.Logg
 			prometheus.BuildFQName(namespace, "", "up"),
 			"Was the last scrape successful.",
 			nil,
+			nil,
+		),
+		version: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "version"),
+			"The version of this ClamAV.",
+			[]string{"version"},
 			nil,
 		),
 		dbVersion: prometheus.NewDesc(

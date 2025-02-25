@@ -20,8 +20,10 @@ func TestExporter_Collect(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New() = _, %v; want nil", err)
 	}
+	version := "1.2.3"
 	exporter.scrape = func(e *Exporter) (m metrics, ok bool) {
 		return metrics{
+			Version: &version,
 			DB: &db{
 				Version: 123,
 				Time:    "Fri Nov 19 09:19:46 2021",

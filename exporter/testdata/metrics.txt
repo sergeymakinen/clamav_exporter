@@ -43,3 +43,6 @@ clamav_pool_queue_min_wait_sec{index="0",primary="1"} 0.131
 # HELP clamav_up Was the last scrape successful.
 # TYPE clamav_up gauge
 clamav_up 1
+# HELP clamav_version The version of this ClamAV.
+# TYPE clamav_version gauge
+clamav_version{version="1.2.3"} 1

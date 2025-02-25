@@ -80,9 +80,11 @@ func TestExporter_Collect_Clamd(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	b = bytes.ReplaceAll(b, []byte("__CLAMAV_VERSION__"), []byte(strings.TrimPrefix(parts[0], "ClamAV ")))
 	b = bytes.ReplaceAll(b, []byte("__CLAMAV_DB_VERSION__"), []byte(strconv.Itoa(ver)))
 	b = bytes.ReplaceAll(b, []byte("__CLAMAV_DB_TIMESTAMP_SECONDS__"), []byte(strconv.FormatInt(tm.Unix(), 10)))
 	metricNames := []string{
+		"clamav_version",
 		"clamav_db_timestamp_seconds",
 		"clamav_db_version",
 		"clamav_pool_idle_timeout_threads",

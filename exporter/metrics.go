@@ -1,9 +1,10 @@
 package exporter
 
 type metrics struct {
-	DB     *db
-	Pools  []pool
-	Memory memory
+	Version *string
+	DB      *db
+	Pools   []pool
+	Memory  memory
 }
 
 type db struct {

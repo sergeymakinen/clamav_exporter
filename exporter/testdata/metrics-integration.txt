@@ -19,3 +19,6 @@ clamav_pool_queue_length{index="0",primary="1"} 0
 # HELP clamav_up Was the last scrape successful.
 # TYPE clamav_up gauge
 clamav_up 1
+# HELP clamav_version The version of this ClamAV.
+# TYPE clamav_version gauge
+clamav_version{version="__CLAMAV_VERSION__"} 1

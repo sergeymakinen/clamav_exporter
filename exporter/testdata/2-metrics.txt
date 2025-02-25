@@ -7,3 +7,6 @@ clamav_db_version 26358
 # HELP clamav_up Was the last scrape successful.
 # TYPE clamav_up gauge
 clamav_up 1
+# HELP clamav_version The version of this ClamAV.
+# TYPE clamav_version gauge
+clamav_version{version="0.103.3"} 1
