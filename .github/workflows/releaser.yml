@@ -3,6 +3,7 @@ on:
     tags:
       - '*'
 permissions:
+  contents: write
   packages: write
 name: Release
 jobs:
