@@ -57,7 +57,7 @@ jobs:
           ln -s clamav_exporter_linux_ppc64le_power8 dist/clamav_exporter_linux_ppc64le
       - name: Set up Docker Build Metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ${{ github.repository }}
