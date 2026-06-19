@@ -15,10 +15,6 @@ updates:
     versioning-strategy: auto
     commit-message:
       prefix: "chore(deps): "
-    groups:
-      development:
-        dependency-types:
-          - "dev"
   
   - package-ecosystem: docker
     directory: /
