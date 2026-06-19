@@ -8,7 +8,7 @@ I'll do My best to keep the project updated to maintain good cyber posture.
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergeymakinen/clamav_exporter.svg)](https://pkg.go.dev/github.com/sergeymakinen/clamav_exporter/v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sergeymakinen/clamav_exporter/v2)](https://goreportcard.com/report/github.com/sergeymakinen/clamav_exporter/v2)
 [![codecov](https://codecov.io/gh/sergeymakinen/clamav_exporter/branch/main/graph/badge.svg)](https://codecov.io/gh/sergeymakinen/clamav_exporter)
-[![Docker Pulls](https://img.shields.io/docker/pulls//gameguyalien/clamav_exporter)](https://hub.docker.com/r//gameguyalien/clamav_exporter)
+[![Docker Pulls](https://img.shields.io/docker/pulls/gameguyalien/clamav_exporter)](https://hub.docker.com/r/gameguyalien/clamav_exporter)
 
 Export ClamAV daemon stats via a TCP socket to Prometheus.
 
