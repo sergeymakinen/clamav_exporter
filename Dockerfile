@@ -1,5 +1,5 @@
 FROM quay.io/prometheus/busybox:latest
-LABEL maintainer="Sergey Makinen <sergey@makinen.ru>"
+LABEL maintainer="Ryan Thomson <gameguyalien@gmail.com>"
 
 ARG TARGETOS
 ARG TARGETARCH

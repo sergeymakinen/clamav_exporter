@@ -1,10 +1,14 @@
 # ClamAV Exporter
 
+## Fork of ClamAV Exporter from [sergeymakinen](https://github.com/sergeymakinen/clamav_exporter) 
+I plan to keep this project in more of a maintenance mode, unless PRs are submitted with vaild new features.
+I'll do My best to keep the project updated to maintain good cyber posture.
+
 [![tests](https://github.com/sergeymakinen/clamav_exporter/workflows/tests/badge.svg)](https://github.com/sergeymakinen/clamav_exporter/actions?query=workflow%3Atests)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergeymakinen/clamav_exporter.svg)](https://pkg.go.dev/github.com/sergeymakinen/clamav_exporter/v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sergeymakinen/clamav_exporter/v2)](https://goreportcard.com/report/github.com/sergeymakinen/clamav_exporter/v2)
 [![codecov](https://codecov.io/gh/sergeymakinen/clamav_exporter/branch/main/graph/badge.svg)](https://codecov.io/gh/sergeymakinen/clamav_exporter)
-[![Docker Pulls](https://img.shields.io/docker/pulls/sergeymakinen/clamav_exporter)](https://hub.docker.com/r/sergeymakinen/clamav_exporter)
+[![Docker Pulls](https://img.shields.io/docker/pulls//gameguyalien/clamav_exporter)](https://hub.docker.com/r//gameguyalien/clamav_exporter)
 
 Export ClamAV daemon stats via a TCP socket to Prometheus.
 
@@ -18,14 +22,14 @@ make
 ## Using Docker
 
 You can deploy this exporter using
-the [sergeymakinen/clamav_exporter](https://hub.docker.com/r/sergeymakinen/clamav_exporter) Docker image.
+the [gameguyalien/clamav_exporter](https://hub.docker.com/r/gameguyalien/clamav_exporter) Docker image.
 
 For example:
 
 ```bash
-docker pull sergeymakinen/clamav_exporter
+docker pull gameguyalien/clamav_exporter
 
-docker run -d -p 9906:9906 sergeymakinen/clamav_exporter \
+docker run -d -p 9906:9906 gameguyalien/clamav_exporter\
   --clamav.address tcp://clamav:3310
 ```
 
