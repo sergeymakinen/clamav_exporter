@@ -2,6 +2,10 @@ on:
   push:
     tags:
       - '*'
+  workflow_call:
+    inputs:
+      tag:
+        type: string
 permissions:
   contents: write
   packages: write
@@ -14,6 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          ref: '${{ inputs.tag }}'
           fetch-depth: 0
       - name: Install Go
         uses: actions/setup-go@v5
@@ -59,14 +64,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
+          context: git
           images: |
             ${{ github.repository }}
             ghcr.io/${{ github.repository }}
           flavor: |
             latest=false
           tags: |
-            type=semver,pattern={{raw}}
-            type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
+            type=semver,pattern={{raw}},value=${{ inputs.tag || github.ref_name }}
+            type=raw,value=latest,enable=${{ !contains(inputs.tag || github.ref_name, '-') }}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
